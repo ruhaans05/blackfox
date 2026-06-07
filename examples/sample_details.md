@@ -1,8 +1,8 @@
-# Details for resume-agent (example)
+# Details for blackfox (example)
 
 Feed this to the agent with:
 
-    resume-agent build --details examples/sample_details.md --style "modern single-column" --open
+    blackfox build --details examples/sample_details.md --style "modern single-column" --open
 
 Replace everything below with your own information.
 

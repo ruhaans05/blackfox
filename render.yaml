@@ -2,7 +2,7 @@
 # this repo, or configure a Web Service manually with the same settings.
 services:
   - type: web
-    name: resume-agent
+    name: blackfox
     runtime: docker
     dockerfilePath: ./Dockerfile
     # A persistent disk requires a paid instance (Starter, ~$7/mo). On the free

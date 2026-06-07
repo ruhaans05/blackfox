@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}resume-agent{% endblock %}</title>
+  <title>{% block title %}Blackfox{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('index') }}">résumé<span>agent</span></a>
+    <a class="brand" href="{{ url_for('index') }}">black<span>fox</span></a>
     {% if user %}
       <nav>
         <a href="{{ url_for('dashboard') }}">My resumes</a>

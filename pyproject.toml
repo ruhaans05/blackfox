@@ -1,7 +1,7 @@
 [project]
-name = "resume-agent"
+name = "blackfox"
 version = "0.1.0"
-description = "Prompt-driven LaTeX resume builder powered by Claude + Tectonic"
+description = "Blackfox — prompt-driven LaTeX resume builder powered by Claude + Tectonic"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -9,7 +9,7 @@ authors = [{ name = "ruhaan" }]
 dependencies = ["anthropic>=0.69.0", "flask>=3.0"]
 
 [project.scripts]
-resume-agent = "resume_agent.cli:main"
+blackfox = "resume_agent.cli:main"
 
 [build-system]
 requires = ["setuptools>=68"]

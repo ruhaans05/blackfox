@@ -1,4 +1,4 @@
-# Deploying resume-agent as a live web app (Render)
+# Deploying blackfox as a live web app (Render)
 
 This repo ships a `Dockerfile` (which bundles the Tectonic LaTeX engine) and a
 `render.yaml` blueprint, so you can put the web UI online with HTTPS and accounts.
@@ -22,14 +22,14 @@ This repo ships a `Dockerfile` (which bundles the Tectonic LaTeX engine) and a
 
 1. Push this repo to GitHub (already done if you used `gh`).
 2. Go to <https://dashboard.render.com> → **New + → Blueprint**.
-3. Connect your GitHub and pick the `resume-agent` repo. Render reads
+3. Connect your GitHub and pick the `blackfox` repo. Render reads
    `render.yaml` and proposes a Docker web service with a disk.
 4. When prompted, set the **`ANTHROPIC_API_KEY`** environment variable to your
    key (it's marked `sync: false` so Render asks you for it).
    `RESUME_AGENT_SECRET_KEY` is generated for you; `RESUME_AGENT_ENV=production`
    is already set.
 5. Click **Apply**. The first build takes a few minutes (it installs Tectonic).
-6. When it's live, open the `https://resume-agent-xxxx.onrender.com` URL, create
+6. When it's live, open the `https://blackfox-xxxx.onrender.com` URL, create
    an account, and build a resume — exactly like the local app.
 
 ### Manual setup (instead of the blueprint)
@@ -42,12 +42,12 @@ string). Deploy.
 ## Test the image locally first (optional)
 
 ```bash
-docker build -t resume-agent .
+docker build -t blackfox .
 docker run --rm -p 8000:8000 \
   -e ANTHROPIC_API_KEY=sk-ant-... \
   -e RESUME_AGENT_SECRET_KEY=dev-secret \
   -v "$PWD/_data:/data" \
-  resume-agent
+  blackfox
 # open http://localhost:8000
 ```
 

@@ -1,4 +1,4 @@
-"""Flask web UI for resume-agent: accounts, per-user resumes, auth-gated PDFs."""
+"""Flask web UI for Blackfox: accounts, per-user resumes, auth-gated PDFs."""
 
 from __future__ import annotations
 

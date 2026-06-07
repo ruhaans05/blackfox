@@ -1,4 +1,4 @@
-"""Command-line interface for resume-agent."""
+"""Command-line interface for blackfox."""
 
 from __future__ import annotations
 
@@ -60,7 +60,7 @@ def _gather_instruction(args) -> str:
     if args.style:
         parts.append(f"Style/format: {args.style}.")
     if not parts:
-        print("ERROR: provide a prompt and/or --details. Try `resume-agent build --help`.", file=sys.stderr)
+        print("ERROR: provide a prompt and/or --details. Try `blackfox build --help`.", file=sys.stderr)
         raise SystemExit(2)
     parts.append(
         "Build the document end to end and compile it to PDF (main.tex). "
@@ -85,7 +85,7 @@ def _finish(agent: ResumeAgent, resume: Resume | None, out: str | None, do_open:
     else:
         print(f"\nPDF: {pdf}")
     if resume is not None:
-        print(f"Saved as: {resume.name!r}  (resume-agent edit {resume.slug!r})")
+        print(f"Saved as: {resume.name!r}  (blackfox edit {resume.slug!r})")
     if do_open:
         open_file(pdf)
 
@@ -120,7 +120,7 @@ def cmd_edit(args) -> int:
     lib = ResumeLibrary()
     resume = lib.get(args.name)
     if resume is None:
-        print(f"No saved resume named {args.name!r}. See `resume-agent list`.", file=sys.stderr)
+        print(f"No saved resume named {args.name!r}. See `blackfox list`.", file=sys.stderr)
         return 2
     return _chat_loop(ResumeAgent(resume.dir), resume)
 
@@ -137,7 +137,7 @@ def _chat_loop(agent: ResumeAgent, resume: Resume | None) -> int:
     print(f"Workspace: {label}")
     has_existing = (agent.ws.root / "main.tex").exists()
     print(
-        "resume-agent chat — describe what you want and refine it as you go.\n"
+        "blackfox chat — describe what you want and refine it as you go.\n"
         "Commands: /open  /files  /rename <new name>  /exit"
         + ("\n(An existing resume is loaded — just tell me what to change.)\n" if has_existing else "\n")
     )
@@ -163,7 +163,7 @@ def _chat_loop(agent: ResumeAgent, resume: Resume | None) -> int:
             if not new:
                 print("  usage: /rename <new name>")
             elif resume is None:
-                print("  this session isn't a saved resume; start with `resume-agent chat --name <name>`")
+                print("  this session isn't a saved resume; start with `blackfox chat --name <name>`")
             else:
                 ResumeLibrary().rename(resume.name, new)
                 resume.name = new
@@ -182,7 +182,7 @@ def _chat_loop(agent: ResumeAgent, resume: Resume | None) -> int:
 def cmd_list(args) -> int:
     resumes = ResumeLibrary().list()
     if not resumes:
-        print("No saved resumes yet. Create one with: resume-agent build --name \"My Resume\" ...")
+        print("No saved resumes yet. Create one with: blackfox build --name \"My Resume\" ...")
         return 0
     print(f"{'NAME':<32}  {'UPDATED':<20}  PDF   SLUG")
     for r in resumes:
@@ -195,7 +195,7 @@ def cmd_rename(args) -> int:
     try:
         r = ResumeLibrary().rename(args.old, args.new)
     except KeyError:
-        print(f"No saved resume named {args.old!r}. See `resume-agent list`.", file=sys.stderr)
+        print(f"No saved resume named {args.old!r}. See `blackfox list`.", file=sys.stderr)
         return 2
     print(f"Renamed to {r.name!r}.")
     return 0
@@ -222,7 +222,7 @@ def cmd_serve(args) -> int:
         import webbrowser
 
         threading.Timer(1.0, lambda: webbrowser.open(url)).start()
-    print(f"resume-agent web UI running at {url}  (Ctrl-C to stop)")
+    print(f"blackfox web UI running at {url}  (Ctrl-C to stop)")
     app.run(host=args.host, port=args.port, debug=False)
     return 0
 
@@ -242,10 +242,10 @@ def cmd_open(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="resume-agent",
+        prog="blackfox",
         description="Prompt-driven LaTeX resume builder powered by Claude + Tectonic.",
     )
-    parser.add_argument("--version", action="version", version=f"resume-agent {__version__}")
+    parser.add_argument("--version", action="version", version=f"blackfox {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     common = argparse.ArgumentParser(add_help=False)

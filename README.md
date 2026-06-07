@@ -1,6 +1,6 @@
-# resume-agent
+# Blackfox
 
-Prompt-driven **LaTeX résumé builder** powered by Claude (Opus 4.8) + the
+**Blackfox** is a prompt-driven **LaTeX résumé builder** powered by Claude (Opus 4.8) + the
 [Tectonic](https://tectonic-typesetting.github.io/) LaTeX engine.
 
 Tell it what you want — *"build me a modern one-page resume for a backend
@@ -46,21 +46,21 @@ Requires **Python 3.10+** and **Tectonic**.
 brew install tectonic            # macOS; see tectonic docs for Linux/Windows
 
 # 2. The tool
-git clone https://github.com/ruhaans05/resume-agent.git
-cd resume-agent
-pip install -e .                 # installs the `resume-agent` command
+git clone https://github.com/ruhaans05/blackfox.git
+cd blackfox
+pip install -e .                 # installs the `blackfox` command
 
 # 3. Your Anthropic API key  (https://console.anthropic.com/)
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 (Prefer not to install? `pip install -r requirements.txt` then run it as
-`python -m resume_agent ...`.)
+`python -m resume_agent ...` — the import package keeps its internal name.)
 
 ## Web app (sign in + browser UI)
 
 ```bash
-resume-agent serve            # opens http://127.0.0.1:5000 in your browser
+blackfox serve            # opens http://127.0.0.1:5000 in your browser
 ```
 
 Create an account, then describe a resume and click **Build it**. The page shows
@@ -81,10 +81,10 @@ if you expose it beyond `127.0.0.1`.
 
 ```bash
 # from a free-text prompt
-resume-agent build "resume for a new-grad data scientist named Sam Lee" --open
+blackfox build "resume for a new-grad data scientist named Sam Lee" --open
 
 # from a details file, in a specific style, saved under a name
-resume-agent build \
+blackfox build \
   --details examples/sample_details.md \
   --style "modern single-column" \
   --name "SWE resume" \
@@ -94,7 +94,7 @@ resume-agent build \
 ### Work interactively
 
 ```bash
-resume-agent chat --name "SWE resume"
+blackfox chat --name "SWE resume"
 # you › make the header bigger and add a Projects section
 # you › /open        (open the latest PDF)
 # you › /rename Backend SWE resume
@@ -104,11 +104,11 @@ resume-agent chat --name "SWE resume"
 ### Manage your saved resumes
 
 ```bash
-resume-agent list                       # show everything you've saved
-resume-agent edit "SWE resume"          # re-open and keep editing
-resume-agent rename "SWE resume" "Backend resume"
-resume-agent open "Backend resume"      # open its PDF
-resume-agent delete "old draft"
+blackfox list                       # show everything you've saved
+blackfox edit "SWE resume"          # re-open and keep editing
+blackfox rename "SWE resume" "Backend resume"
+blackfox open "Backend resume"      # open its PDF
+blackfox delete "old draft"
 ```
 
 Saved resumes live in `~/.resume-agent/resumes/` (override with
@@ -132,7 +132,7 @@ Chat commands: `/open`, `/files`, `/rename <new name>`, `/exit`.
 
 ## How it works
 
-`resume-agent` runs an agentic loop against the Claude Messages API. Claude is
+`blackfox` runs an agentic loop against the Claude Messages API. Claude is
 given four tools over a sandboxed workspace — `write_file`, `read_file`,
 `list_files`, and `compile_latex` — and drives them itself: it authors the LaTeX,
 compiles with Tectonic, reads any errors, fixes them, and repeats until the PDF
