@@ -1,0 +1,13 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+*.egg-info
+build
+dist
+output
+# NEVER ship secrets into the image:
+.env
+# local data dir if present
+data

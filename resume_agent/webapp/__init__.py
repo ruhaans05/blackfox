@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import functools
+import os
 
 from flask import (
     Flask,
@@ -23,7 +24,24 @@ from . import db, jobs
 def create_app() -> Flask:
     app = Flask(__name__)
     db.init_db()
-    app.secret_key = db.secret_key()
+
+    # In production, the secret key comes from the environment so sessions stay
+    # valid across restarts/deploys; locally it's persisted to a file.
+    app.secret_key = os.environ.get("RESUME_AGENT_SECRET_KEY") or db.secret_key()
+
+    production = os.environ.get("RESUME_AGENT_ENV") == "production"
+    app.config.update(
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",
+        SESSION_COOKIE_SECURE=production,  # require HTTPS for the cookie in prod
+        MAX_CONTENT_LENGTH=1 * 1024 * 1024,
+    )
+    if production:
+        # Behind Render's TLS proxy: trust X-Forwarded-* so url_for builds https
+        # URLs and the secure cookie is set correctly.
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     # -- auth helpers --------------------------------------------------------
 

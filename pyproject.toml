@@ -17,3 +17,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["resume_agent*"]
+
+[tool.setuptools.package-data]
+"resume_agent.webapp" = ["templates/*.html", "static/*"]

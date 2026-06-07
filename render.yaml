@@ -1,0 +1,21 @@
+# Render blueprint — deploy with one click via "New + → Blueprint" pointed at
+# this repo, or configure a Web Service manually with the same settings.
+services:
+  - type: web
+    name: resume-agent
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # A persistent disk requires a paid instance (Starter, ~$7/mo). On the free
+    # plan there is no disk and the service sleeps — accounts/resumes would reset.
+    plan: starter
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false          # set this in the Render dashboard (secret)
+      - key: RESUME_AGENT_SECRET_KEY
+        generateValue: true  # Render generates a stable random value
+      - key: RESUME_AGENT_ENV
+        value: production
+    disk:
+      name: data
+      mountPath: /data       # matches RESUME_AGENT_HOME / HOME in the Dockerfile
+      sizeGB: 1
