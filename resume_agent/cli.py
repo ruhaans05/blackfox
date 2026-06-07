@@ -209,6 +209,24 @@ def cmd_delete(args) -> int:
     return 2
 
 
+def cmd_serve(args) -> int:
+    """Launch the web UI (accounts + per-user, auth-gated resumes)."""
+    if not _preflight():
+        return 1
+    from resume_agent.webapp import create_app
+
+    app = create_app()
+    url = f"http://127.0.0.1:{args.port}"
+    if not args.no_browser:
+        import threading
+        import webbrowser
+
+        threading.Timer(1.0, lambda: webbrowser.open(url)).start()
+    print(f"resume-agent web UI running at {url}  (Ctrl-C to stop)")
+    app.run(host=args.host, port=args.port, debug=False)
+    return 0
+
+
 def cmd_open(args) -> int:
     resume = ResumeLibrary().get(args.name)
     if resume is None:
@@ -265,6 +283,12 @@ def main(argv: list[str] | None = None) -> int:
     dl = sub.add_parser("delete", help="Delete a saved resume.")
     dl.add_argument("name", help="Name or slug to delete.")
     dl.set_defaults(func=cmd_delete)
+
+    sv = sub.add_parser("serve", help="Launch the web UI (sign in, build & view resumes in the browser).")
+    sv.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1).")
+    sv.add_argument("-p", "--port", type=int, default=5000, help="Port (default: 5000).")
+    sv.add_argument("--no-browser", action="store_true", help="Don't auto-open a browser.")
+    sv.set_defaults(func=cmd_serve)
 
     op = sub.add_parser("open", help="Open a saved resume's PDF.")
     op.add_argument("name", help="Name or slug to open.")

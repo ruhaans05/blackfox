@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}My resumes — resume-agent{% endblock %}
+{% block content %}
+<div class="grid">
+  <section class="card">
+    <h1>Describe a new resume</h1>
+    <form method="post" action="{{ url_for('create_resume') }}">
+      <label>Name<input name="name" placeholder="e.g. Backend SWE resume" required></label>
+      <label>What do you want?
+        <textarea name="description" rows="6" required
+          placeholder="e.g. A clean one-page resume for a senior backend engineer. Modern single-column, blue accent. I'm Jane Doe, jane@example.com, ..."></textarea>
+      </label>
+      <button class="primary" type="submit">Build it</button>
+      <p class="muted">The agent writes the LaTeX, compiles it to PDF, and fixes any errors itself.</p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h1>Your resumes</h1>
+    {% if resumes %}
+      <ul class="list">
+        {% for r in resumes %}
+          <li>
+            <a href="{{ url_for('resume', resume_id=r['id']) }}">{{ r['name'] }}</a>
+            <span class="badge {{ r['status'] }}">{{ r['status'] }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">Nothing yet — describe one on the left to get started.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ r['name'] }} — resume-agent{% endblock %}
+{% block content %}
+<div class="resume-head">
+  <div>
+    <a class="back" href="{{ url_for('dashboard') }}">← My resumes</a>
+    <h1 id="title">{{ r['name'] }}</h1>
+  </div>
+  <span class="badge {{ r['status'] }}" id="badge">{{ r['status'] }}</span>
+</div>
+
+<div id="building" class="card{% if r['status'] != 'building' %} hidden{% endif %}">
+  <p class="spinner">Building your resume… the agent is writing LaTeX and compiling it. This usually takes a minute.</p>
+</div>
+
+<div id="errored" class="card{% if r['status'] != 'error' %} hidden{% endif %}">
+  <p>Something went wrong building this resume. Try refining it below with clearer instructions.</p>
+</div>
+
+<div id="viewer" class="card{% if not has_pdf %} hidden{% endif %}">
+  <div class="viewer-actions">
+    <a class="primary" href="{{ url_for('resume_pdf_file', resume_id=r['id']) }}" target="_blank">Open PDF</a>
+    <a class="btn" href="{{ url_for('resume_pdf_file', resume_id=r['id'], download=1) }}">Download</a>
+  </div>
+  <iframe id="pdf" title="resume PDF" src="{{ url_for('resume_pdf_file', resume_id=r['id']) }}{% if not has_pdf %}{% endif %}"></iframe>
+</div>
+
+<div class="grid">
+  <section class="card">
+    <h2>Refine</h2>
+    <form method="post" action="{{ url_for('refine_resume', resume_id=r['id']) }}">
+      <textarea name="description" rows="4" required
+        placeholder="e.g. Add a Projects section, make the accent teal, put my name as Jane Doe"></textarea>
+      <button class="primary" type="submit">Apply change</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Manage</h2>
+    <form method="post" action="{{ url_for('rename_resume', resume_id=r['id']) }}" class="row">
+      <input name="name" value="{{ r['name'] }}" required>
+      <button class="btn" type="submit">Rename</button>
+    </form>
+    <form method="post" action="{{ url_for('delete_resume', resume_id=r['id']) }}"
+          onsubmit="return confirm('Delete this resume?')">
+      <button class="danger" type="submit">Delete</button>
+    </form>
+  </section>
+</div>
+
+<script>
+const RID = {{ r['id'] }};
+let status = "{{ r['status'] }}";
+function show(id, on) { document.getElementById(id).classList.toggle('hidden', !on); }
+async function poll() {
+  if (status !== 'building') return;
+  try {
+    const res = await fetch(`/resumes/${RID}/status`);
+    const data = await res.json();
+    status = data.status;
+    document.getElementById('badge').textContent = status;
+    document.getElementById('badge').className = 'badge ' + status;
+    if (status === 'ready' && data.has_pdf) {
+      show('building', false); show('errored', false); show('viewer', true);
+      const f = document.getElementById('pdf');
+      f.src = `/resumes/${RID}/pdf?t=` + Date.now();   // bust cache after rebuild
+    } else if (status === 'error') {
+      show('building', false); show('errored', true);
+    } else {
+      setTimeout(poll, 1500);
+    }
+  } catch (e) { setTimeout(poll, 2500); }
+}
+poll();
+</script>
+{% endblock %}

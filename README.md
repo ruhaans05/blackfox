@@ -25,8 +25,11 @@ Done — compiled to main.tex → main.pdf. Want me to tweak the spacing or colo
   interactive `chat`/`edit` session.
 - **Always compiles** — the agent runs Tectonic and won't stop until the PDF
   builds; it reads the error log and fixes the LaTeX itself.
+- **Web app with accounts** — sign in, describe a resume in the browser, watch it
+  build, and view/download the PDF. Each user's resumes (and their PDFs) are
+  private: the PDF endpoint is gated to its owner.
 - **Saved resume library** — keep named, editable resumes (your "account") and
-  re-open any of them later. Rename them anytime.
+  re-open any of them later, from the CLI or the web UI. Rename them anytime.
 - **No fabrication** — it never invents jobs, dates, or degrees; missing info
   becomes clear placeholders for you to fill in.
 
@@ -54,7 +57,25 @@ export ANTHROPIC_API_KEY=sk-ant-...
 (Prefer not to install? `pip install -r requirements.txt` then run it as
 `python -m resume_agent ...`.)
 
-## Usage
+## Web app (sign in + browser UI)
+
+```bash
+resume-agent serve            # opens http://127.0.0.1:5000 in your browser
+```
+
+Create an account, then describe a resume and click **Build it**. The page shows
+the build progress and, when ready, embeds the PDF with **Open** / **Download**
+buttons. Refine it with follow-up instructions, rename it, or delete it — all in
+the browser.
+
+Accounts and resumes are stored locally under `~/.resume-agent/web/`
+(SQLite for users + metadata, files per user on disk). Passwords are hashed
+(Werkzeug PBKDF2) and **a resume's PDF is only served to the signed-in user who
+owns it** — anyone else gets a 404, and signed-out requests are redirected to the
+login page. This is a local single-host app; run it behind HTTPS/a reverse proxy
+if you expose it beyond `127.0.0.1`.
+
+## Usage (CLI)
 
 ### Build in one shot
 
@@ -98,6 +119,7 @@ a `meta.json` holding the name you chose.
 
 | Command | What it does |
 |---|---|
+| `serve [--host H] [-p PORT] [--no-browser]` | Launch the web UI (accounts + auth-gated PDFs) |
 | `build [prompt] [-d FILE] [-s STYLE] [-n NAME] [-o OUT] [--open]` | Build a document end-to-end |
 | `chat [-n NAME] [-w DIR]` | Interactive build/refine session |
 | `edit NAME` | Re-open a saved resume and keep editing |
@@ -123,7 +145,13 @@ resume_agent/
 ├── agent.py      # the Claude tool loop + system prompt
 ├── tools.py      # workspace sandbox + tool schemas
 ├── compiler.py   # Tectonic wrapper
-└── library.py    # saved-resume library (named, editable)
+├── library.py    # saved-resume library (named, editable)
+└── webapp/       # Flask web UI: accounts, per-user storage, auth-gated PDFs
+    ├── __init__.py  # routes + auth
+    ├── db.py        # SQLite users + resume metadata
+    ├── jobs.py      # background build jobs
+    ├── templates/   # HTML
+    └── static/      # CSS
 ```
 
 ## Using the output with Overleaf
